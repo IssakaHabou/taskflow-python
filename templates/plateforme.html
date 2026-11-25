@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% set active = 'platform' %}
+{% block title %}Plateforme{% endblock %}
+{% block container_class %}narrow{% endblock %}
+{% block content %}
+<h1>Environnement d'exécution</h1>
+<p class="lead">
+    Ces informations sont lues en direct sur le serveur. Sur un <strong>PaaS</strong>, le système
+    d'exploitation, l'interpréteur Python, le serveur WSGI et le réseau sont fournis par la plateforme :
+    le développeur ne livre que le code de l'application.
+</p>
+
+<table class="card info">
+    {% for key, value in info %}
+    <tr><th>{{ key }}</th><td>{{ value }}</td></tr>
+    {% endfor %}
+</table>
+
+<h2>Points d'accès utiles</h2>
+<ul class="links">
+    <li><a href="{{ url_for('api_list') }}" target="_blank"><code>GET /api/tasks</code></a> — liste des tâches (JSON)</li>
+    <li><a href="{{ url_for('api_stats') }}" target="_blank"><code>GET /api/tasks/stats</code></a> — statistiques</li>
+    <li><a href="{{ url_for('health') }}" target="_blank"><code>GET /health</code></a> — état de santé (application + base)</li>
+</ul>
+{% endblock %}
