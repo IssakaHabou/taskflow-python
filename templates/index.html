@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% set active = 'tasks' %}
+{% block title %}Tâches{% endblock %}
+{% block content %}
+<section class="stats">
+    <a class="stat {{ 'sel' if not current }}" href="{{ url_for('index') }}">
+        <span class="num">{{ stats.total }}</span><span>Total</span>
+    </a>
+    {% for code, label in statuses %}
+    <a class="stat {{ 'sel' if current == code }}" href="{{ url_for('index', status=code) }}">
+        <span class="num">{{ stats[code] }}</span><span>{{ label }}</span>
+    </a>
+    {% endfor %}
+</section>
+
+<div class="toolbar">
+    <h1>{{ current_label or 'Toutes les tâches' }}</h1>
+    <a class="btn primary" href="{{ url_for('new_task') }}">+ Nouvelle tâche</a>
+</div>
+
+{% if not tasks %}<p class="empty">Aucune tâche pour l'instant.</p>{% endif %}
+
+<ul class="tasks">
+    {% for t in tasks %}
+    <li class="task {{ 'done' if t.status == 'TERMINEE' }}">
+        <div class="task-main">
+            <div class="task-head">
+                <span class="badge p-{{ t.priority|lower }}">{{ t.priority_label }}</span>
+                <strong>{{ t.title }}</strong>
+            </div>
+            {% if t.description %}<p class="desc">{{ t.description }}</p>{% endif %}
+            <p class="meta">
+                <span>{{ t.status_label }}</span>
+                {% if t.due_date %}
+                <span class="{{ 'late' if t.overdue }}">· Échéance : {{ t.due_date.strftime('%d/%m/%Y') }}{% if t.overdue %} (en retard){% endif %}</span>
+                {% endif %}
+            </p>
+        </div>
+        <div class="task-actions">
+            <form action="{{ url_for('change_status', task_id=t.id) }}" method="post" class="inline">
+                <select name="value" onchange="this.form.submit()" aria-label="Statut">
+                    {% for code, label in statuses %}
+                    <option value="{{ code }}" {{ 'selected' if code == t.status }}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+            <a class="btn" href="{{ url_for('edit_task', task_id=t.id) }}">Modifier</a>
+            <form action="{{ url_for('delete_task', task_id=t.id) }}" method="post" class="inline"
+                  onsubmit="return confirm('Supprimer cette tâche ?')">
+                <button type="submit" class="btn danger">Supprimer</button>
+            </form>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
