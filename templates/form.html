@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% set active = 'tasks' if task else 'new' %}
+{% block title %}{{ 'Modifier' if task else 'Nouvelle tâche' }}{% endblock %}
+{% block container_class %}narrow{% endblock %}
+{% block content %}
+<h1>{{ 'Modifier la tâche' if task else 'Nouvelle tâche' }}</h1>
+
+<form action="{{ url_for('save_task') }}" method="post" class="card form">
+    {% if task %}<input type="hidden" name="id" value="{{ task.id }}">{% endif %}
+
+    <label>Titre *
+        <input type="text" name="title" maxlength="120" required value="{{ values.get('title', '') }}">
+        {% if errors.title %}<small class="err">{{ errors.title }}</small>{% endif %}
+    </label>
+
+    <label>Description
+        <textarea name="description" rows="4" maxlength="1000">{{ values.get('description', '') }}</textarea>
+        {% if errors.description %}<small class="err">{{ errors.description }}</small>{% endif %}
+    </label>
+
+    <div class="row">
+        <label>Statut
+            <select name="status">
+                {% for code, label in statuses %}
+                <option value="{{ code }}" {{ 'selected' if values.get('status', 'A_FAIRE') == code }}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>Priorité
+            <select name="priority">
+                {% for code, label in priorities %}
+                <option value="{{ code }}" {{ 'selected' if values.get('priority', 'MOYENNE') == code }}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>Échéance
+            <input type="date" name="dueDate" value="{{ values.get('dueDate', '') }}">
+            {% if errors.dueDate %}<small class="err">{{ errors.dueDate }}</small>{% endif %}
+        </label>
+    </div>
+
+    <div class="form-actions">
+        <a class="btn" href="{{ url_for('index') }}">Annuler</a>
+        <button type="submit" class="btn primary">Enregistrer</button>
+    </div>
+</form>
+{% endblock %}
